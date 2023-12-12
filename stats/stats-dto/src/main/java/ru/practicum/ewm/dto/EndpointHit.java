@@ -1,7 +1,7 @@
 package ru.practicum.ewm.dto;
 
-import lombok.Data;
 import com.fasterxml.jackson.annotation.JsonFormat;
+import lombok.Data;
 
 import static constant.Constants.PATTERN_FOR_DATETIME;
 

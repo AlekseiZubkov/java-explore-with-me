@@ -1,11 +1,11 @@
 package ru.practicum.ewm.model;
 
-import java.time.LocalDateTime;
-import javax.persistence.*;
-
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+
+import javax.persistence.*;
+import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "hits", schema = "public")

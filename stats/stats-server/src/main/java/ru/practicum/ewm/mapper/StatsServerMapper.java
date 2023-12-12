@@ -1,10 +1,10 @@
 package ru.practicum.ewm.mapper;
 
-import ru.practicum.ewm.dto.EndpointHit;
-import ru.practicum.ewm.model.Hit;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.factory.Mappers;
+import ru.practicum.ewm.dto.EndpointHit;
+import ru.practicum.ewm.model.Hit;
 
 import static constant.Constants.PATTERN_FOR_DATETIME;
 

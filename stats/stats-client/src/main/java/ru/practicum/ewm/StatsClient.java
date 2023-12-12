@@ -1,5 +1,8 @@
 package ru.practicum.ewm;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.reflect.TypeToken;
 import ru.practicum.ewm.dto.EndpointHit;
 import ru.practicum.ewm.dto.ViewStats;
 import ru.practicum.ewm.exception.ClientException;
@@ -12,10 +15,6 @@ import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.time.LocalDateTime;
 import java.util.List;
-
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.reflect.TypeToken;
 
 public class StatsClient {
 
@@ -37,7 +36,8 @@ public class StatsClient {
                                        List<String> uris, Boolean unique) {
         URI uri = buildStatsURI(start, end, uris, unique);
         HttpRequest request = buildGetRequest(uri);
-        return executeRequest(request, new TypeToken<List<ViewStats>>() {}.getType());
+        return executeRequest(request, new TypeToken<List<ViewStats>>() {
+        }.getType());
     }
 
     private HttpRequest buildPostRequest(URI uri, String requestBody) {

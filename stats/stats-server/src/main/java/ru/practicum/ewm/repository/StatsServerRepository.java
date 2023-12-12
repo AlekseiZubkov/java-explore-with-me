@@ -1,14 +1,13 @@
 package ru.practicum.ewm.repository;
 
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.stereotype.Repository;
 import ru.practicum.ewm.dto.ViewStats;
 import ru.practicum.ewm.model.Hit;
 
 import java.time.LocalDateTime;
 import java.util.List;
-
-import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Query;
-import org.springframework.stereotype.Repository;
 
 @Repository
 public interface StatsServerRepository extends JpaRepository<Hit, Long> {
