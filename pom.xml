@@ -7,16 +7,13 @@
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-starter-parent</artifactId>
 		<version>2.7.14</version>
-		<relativePath/> <!-- lookup parent from repository -->
+		<relativePath/>
 	</parent>
 
 	<name>Explore With Me</name>
 	<modules>
 		<module>ewm-service</module>
 		<module>stats</module>
-		<module>stats/stats-client</module>
-		<module>stats/stats-server</module>
-		<module>stats/stats-dto</module>
 	</modules>
 
 	<groupId>ru.practicum</groupId>
