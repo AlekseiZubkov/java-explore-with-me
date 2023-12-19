@@ -5,6 +5,7 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import ru.practicum.ewm.dto.EndpointHit;
 import ru.practicum.ewm.dto.ViewStats;
+import ru.practicum.ewm.exception.BadRequestException;
 import ru.practicum.ewm.exception.HitNotSaveException;
 import ru.practicum.ewm.mapper.StatsServerMapper;
 import ru.practicum.ewm.model.Hit;
@@ -33,6 +34,9 @@ public class StatsServerServiceImpl implements StatsServerService {
 
     @Override
     public List<ViewStats> getAllStats(LocalDateTime start, LocalDateTime end, List<String> uris, Boolean unique) {
+        if (end.isBefore(start)) {
+            throw new BadRequestException("Время конца должны быть после времени начала.");
+        }
         if (unique) {
             if (uris == null) {
                 return statsServerRepository.getAllUniqueStats(start, end);
