@@ -1,7 +1,14 @@
 package ru.practicum.ewm;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.reflect.TypeToken;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Component;
+import org.springframework.web.util.UriComponentsBuilder;
 import ru.practicum.ewm.dto.EndpointHit;
 import ru.practicum.ewm.dto.ViewStats;
+import ru.practicum.ewm.exception.ClientException;
 
 import java.io.IOException;
 import java.lang.reflect.Type;
@@ -11,14 +18,6 @@ import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.time.LocalDateTime;
 import java.util.List;
-
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.reflect.TypeToken;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.web.util.UriComponentsBuilder;
-import org.springframework.stereotype.Component;
-import ru.practicum.ewm.exception.ClientException;
 
 @Component
 public class StatsClient {
