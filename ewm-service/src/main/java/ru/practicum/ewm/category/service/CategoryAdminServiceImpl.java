@@ -19,6 +19,7 @@ import ru.practicum.ewm.exception.SaveException;
 public class CategoryAdminServiceImpl implements CategoryAdminService {
 
     private final CategoryRepository categoryRepository;
+
     @Transactional
     @Override
     public CategoryDto saveCategory(NewCategoryDto newCategoryDto) {
@@ -30,6 +31,7 @@ public class CategoryAdminServiceImpl implements CategoryAdminService {
             throw new SaveException("Категория не была создана: " + newCategoryDto);
         }
     }
+
     @Transactional
     @Override
     public Boolean deleteCategoryById(Long catId) {
@@ -43,6 +45,7 @@ public class CategoryAdminServiceImpl implements CategoryAdminService {
                     "существуют события, связанные с категорией.");
         }
     }
+
     @Transactional
     @Override
     public CategoryDto updateCategory(Long catId, CategoryDto categoryDto) {

@@ -29,6 +29,7 @@ public class CategoryPublicServiceImpl implements CategoryPublicService {
 
     @Override
     public CategoryDto getCategoryById(Long catId) {
+
         return CategoryMapper.INSTANCE.toCategoryDto(categoryRepository.findById(catId).
                 orElseThrow(() -> new NotFoundException("Категория с id = " + catId + " не найден.")));
     }
