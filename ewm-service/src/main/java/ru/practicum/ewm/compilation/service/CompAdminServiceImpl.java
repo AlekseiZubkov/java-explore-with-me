@@ -26,6 +26,7 @@ public class CompAdminServiceImpl implements CompAdminService {
 
     private final CompilationRepository compilationRepository;
     private final EventRepository eventRepository;
+
     @Transactional
     @Override
     public CompilationDto saveCompilation(NewCompilationDto newCompilationDto) {
@@ -42,6 +43,7 @@ public class CompAdminServiceImpl implements CompAdminService {
             throw new SaveException("Подборка событий не была создана: " + newCompilationDto);
         }
     }
+
     @Transactional
     @Override
     public void deleteCompilationById(Long compId) {
@@ -52,6 +54,7 @@ public class CompAdminServiceImpl implements CompAdminService {
             throw new ConflictException("Подборка с id = " + compId + " не может быть удалена.");
         }
     }
+
     @Transactional
     @Override
     public CompilationDto updateCompilation(Long compId, UpdateCompilationRequest updateCompilationRequest) {
@@ -75,6 +78,7 @@ public class CompAdminServiceImpl implements CompAdminService {
                     " не была обновлена: " + updateCompilationRequest);
         }
     }
+
     private Compilation returnCompilation(Long compId) {
         return compilationRepository.findById(compId).orElseThrow(() ->
                 new NotFoundException("Подборка событий с ID " + compId + " не найдена."));

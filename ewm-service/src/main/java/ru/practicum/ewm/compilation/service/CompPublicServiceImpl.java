@@ -39,6 +39,7 @@ public class CompPublicServiceImpl implements CompPublicService {
     public CompilationDto getCompilationById(Long compId) {
         return CompilationMapper.INSTANCE.toCompilationDto(returnCompilation(compId));
     }
+
     private Compilation returnCompilation(Long compId) {
         return compilationRepository.findById(compId).orElseThrow(() ->
                 new NotFoundException("Подборка событий с ID " + compId + " не найдена."));

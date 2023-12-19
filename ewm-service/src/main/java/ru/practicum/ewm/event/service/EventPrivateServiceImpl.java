@@ -1,5 +1,12 @@
 package ru.practicum.ewm.event.service;
 
+import lombok.RequiredArgsConstructor;
+import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.ewm.StatsClient;
 import ru.practicum.ewm.category.model.Category;
 import ru.practicum.ewm.category.repository.CategoryRepository;
@@ -28,14 +35,6 @@ import ru.practicum.ewm.user.repository.UserRepository;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-
-import lombok.RequiredArgsConstructor;
-import org.springframework.dao.DataIntegrityViolationException;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import static constant.Constants.FORMATTER_FOR_DATETIME;
 
@@ -259,6 +258,7 @@ public class EventPrivateServiceImpl implements EventPrivateService {
                     " не является инициатором события с id = " + event.getId());
         }
     }
+
     private Category returnCategory(Long catId) {
         return categoryRepository.findById(catId)
                 .orElseThrow(() -> new NotFoundException("Категория с id = " + catId + " не найден."));
@@ -268,6 +268,7 @@ public class EventPrivateServiceImpl implements EventPrivateService {
         return userRepository.findById(userId)
                 .orElseThrow(() -> new NotFoundException("Пользователь с id = " + userId + " не найден."));
     }
+
     private Location returnLocation(LocationDto locationDto) {
         Location location = locationRepository.findByLatAndLon(locationDto.getLat(), locationDto.getLon());
         return location != null ? location : locationRepository.save(LocationMapper.INSTANCE.toLocation(locationDto));
