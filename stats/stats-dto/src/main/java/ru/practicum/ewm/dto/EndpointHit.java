@@ -7,6 +7,8 @@ import org.springframework.validation.annotation.Validated;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Positive;
 
+import java.time.LocalDateTime;
+
 import static constant.Constants.PATTERN_FOR_DATETIME;
 
 @Data
@@ -22,6 +24,6 @@ public class EndpointHit {
     private String ip; // IP-адрес пользователя, осуществившего запрос
     @NotBlank
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = PATTERN_FOR_DATETIME)
-    private String timestamp; //  Дата и время, когда был совершен запрос к эндпоинту
+    private LocalDateTime timestamp; //  Дата и время, когда был совершен запрос к эндпоинту
 
 }
