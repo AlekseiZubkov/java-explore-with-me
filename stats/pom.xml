@@ -18,6 +18,7 @@
         <module>stats-server</module>
     </modules>
 
+
     <artifactId>stats</artifactId>
 
 </project>
