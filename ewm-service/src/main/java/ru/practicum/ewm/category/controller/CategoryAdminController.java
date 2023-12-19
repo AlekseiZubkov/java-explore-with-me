@@ -29,6 +29,7 @@ public class CategoryAdminController {
 
     @DeleteMapping("/{catId}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
+
     public ResponseEntity<Boolean> deleteCategoryById(@PathVariable Long catId) {
         Boolean result = adminService.deleteCategoryById(catId);
         log.info("Удалена категория с id = {}", catId);
@@ -37,6 +38,7 @@ public class CategoryAdminController {
 
     @PatchMapping("/{catId}")
     @Validated
+
     public ResponseEntity<CategoryDto> updateCategory(
             @PathVariable Long catId, @Valid @RequestBody CategoryDto categoryDto) {
         categoryDto = adminService.updateCategory(catId, categoryDto);

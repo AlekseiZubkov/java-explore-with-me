@@ -54,8 +54,8 @@ public class UserAdminServiceImpl implements UserAdminService {
         returnUser(userId);
         userRepository.deleteById(userId);
     }
-    private User returnUser(Long userId) {
-        return userRepository.findById(userId)
+    private void returnUser(Long userId) {
+        userRepository.findById(userId)
                 .orElseThrow(() -> new NotFoundException("Пользователь с id = " + userId + " не найден."));
     }
 }
