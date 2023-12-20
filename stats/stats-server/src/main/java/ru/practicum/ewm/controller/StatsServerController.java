@@ -39,9 +39,9 @@ public class StatsServerController {
         log.info("GET stats start={}, end={}, uris={}, unique={}", start, end, uris, unique);
         return ResponseEntity.ok().body(stats);
     }
+
     @GetMapping("/full-stats")
-    public ResponseEntity<List<ViewStats>> getFullStats()
-             {
+    public ResponseEntity<List<ViewStats>> getFullStats() {
         List<ViewStats> stats = statsServerService.getFullStats();
         log.info("Получить полную статистику ");
         return ResponseEntity.ok().body(stats);

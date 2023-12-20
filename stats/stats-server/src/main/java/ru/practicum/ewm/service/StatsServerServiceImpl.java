@@ -24,7 +24,7 @@ public class StatsServerServiceImpl implements StatsServerService {
     public EndpointHit saveEndpointHit(EndpointHit endpointHit) {
         Hit hit = StatsServerMapper.INSTANCE.toHit(endpointHit);
         try {
-            hit = statsServerRepository.save(StatsServerMapper.INSTANCE.toHit(endpointHit));
+            hit = statsServerRepository.save(hit);
 
         } catch (RuntimeException e) {
             throw new HitNotSaveException("Информация не сохранена: " + endpointHit);
