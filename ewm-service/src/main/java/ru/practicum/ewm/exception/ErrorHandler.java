@@ -72,7 +72,7 @@ public class ErrorHandler {
         return apiError;
     }
 
-    @ExceptionHandler
+    @ExceptionHandler({ConflictException.class})
     @ResponseStatus(HttpStatus.CONFLICT)
     public ApiError handleNotSave(final ConflictException e) {
         ApiError apiError = new ApiError();
@@ -86,9 +86,9 @@ public class ErrorHandler {
         return apiError;
     }
 
-    @ExceptionHandler
+    @ExceptionHandler({RuntimeException.class, MissingServletRequestParameterException.class})
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public ApiError handleNotSave(final BadRequestException e) {
+    public ApiError handleNotSave(final RuntimeException e) {
         ApiError apiError = new ApiError();
         apiError.setStatus(HttpStatus.BAD_REQUEST);
         apiError.setReason("Incorrectly made request.");
@@ -100,23 +100,10 @@ public class ErrorHandler {
         return apiError;
     }
 
-    @ExceptionHandler
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public ApiError handleMissingRequestParameter(final MissingServletRequestParameterException e) {
-        ApiError apiError = new ApiError();
-        apiError.setStatus(HttpStatus.BAD_REQUEST);
-        apiError.setReason("Required request parameter is not present.");
-        apiError.setMessage(e.getMessage());
-        apiError.setTimestamp(LocalDateTime.now());
-        apiError.setErrors(Arrays.stream(e.getStackTrace()).map(x -> x.toString()).collect(Collectors.toList()));
-
-        log.warn(apiError.toString());
-        return apiError;
-    }
 
     @ExceptionHandler
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
-    public ApiError handleThrowable(final Throwable e) {
+    public ApiError handleException( Exception e) {
         ApiError apiError = new ApiError();
         apiError.setStatus(HttpStatus.INTERNAL_SERVER_ERROR);
         apiError.setReason("Произошла непредвиденная ошибка.");

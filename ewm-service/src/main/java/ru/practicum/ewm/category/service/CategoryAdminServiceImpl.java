@@ -14,20 +14,18 @@ import ru.practicum.ewm.exception.NotFoundException;
 import ru.practicum.ewm.exception.SaveException;
 
 @Service
-@Transactional
 @RequiredArgsConstructor
 public class CategoryAdminServiceImpl implements CategoryAdminService {
 
     private final CategoryRepository categoryRepository;
 
-    @Transactional
     @Override
     public CategoryDto saveCategory(NewCategoryDto newCategoryDto) {
         try {
             Category category = categoryRepository.save(
                     CategoryMapper.INSTANCE.toCategoryFromNewDto(newCategoryDto));
             return CategoryMapper.INSTANCE.toCategoryDto(category);
-        } catch (DataIntegrityViolationException e) {
+        } catch (RuntimeException e) {
             throw new SaveException("Категория не была создана: " + newCategoryDto);
         }
     }
@@ -40,13 +38,13 @@ public class CategoryAdminServiceImpl implements CategoryAdminService {
 
         try {
             return categoryRepository.deleteByIdWithReturnedLines(catId) >= 0;
-        } catch (DataIntegrityViolationException e) {
+        } catch (RuntimeException e) {
             throw new ConflictException("Категория с id = " + catId + " не может быть удалена, " +
                     "существуют события, связанные с категорией.");
         }
     }
 
-    @Transactional
+
     @Override
     public CategoryDto updateCategory(Long catId, CategoryDto categoryDto) {
         Category category = categoryRepository.findById(catId)
@@ -54,10 +52,11 @@ public class CategoryAdminServiceImpl implements CategoryAdminService {
         category.setName(categoryDto.getName());
 
         try {
-            return CategoryMapper.INSTANCE.toCategoryDto(categoryRepository.saveAndFlush(category));
-        } catch (DataIntegrityViolationException e) {
-            throw new SaveException("Категория с id = " + catId + " не была обновлена: " + categoryDto);
+            category = categoryRepository.save(category);
+        } catch (DataIntegrityViolationException  e) {
+            throw new ConflictException("Категория с id = " + catId + " не была обновлена: " + categoryDto);
         }
+        return CategoryMapper.INSTANCE.toCategoryDto(category);
     }
 
 }

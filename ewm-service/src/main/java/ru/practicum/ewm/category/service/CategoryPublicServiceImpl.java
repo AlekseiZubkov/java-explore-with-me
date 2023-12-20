@@ -14,7 +14,6 @@ import ru.practicum.ewm.exception.NotFoundException;
 import java.util.List;
 
 @Service
-@Transactional(readOnly = true)
 @RequiredArgsConstructor
 public class CategoryPublicServiceImpl implements CategoryPublicService {
 

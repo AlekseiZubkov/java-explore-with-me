@@ -31,17 +31,15 @@ public class CompAdminServiceImpl implements CompAdminService {
     @Override
     public CompilationDto saveCompilation(NewCompilationDto newCompilationDto) {
         Set<Event> events = new HashSet<>();
+
         if (newCompilationDto.getEvents() != null && !newCompilationDto.getEvents().isEmpty()) {
             events.addAll(eventRepository.findAllById(newCompilationDto.getEvents()));
         }
 
-        try {
-            Compilation compilation = compilationRepository.save(
-                    CompilationMapper.INSTANCE.toCompilationFromNewDto(newCompilationDto, events));
-            return CompilationMapper.INSTANCE.toCompilationDto(compilation);
-        } catch (DataIntegrityViolationException e) {
-            throw new SaveException("Подборка событий не была создана: " + newCompilationDto);
-        }
+        Compilation compilation = compilationRepository.save(
+                CompilationMapper.INSTANCE.toCompilationFromNewDto(newCompilationDto, events));
+
+        return CompilationMapper.INSTANCE.toCompilationDto(compilation);
     }
 
     @Transactional

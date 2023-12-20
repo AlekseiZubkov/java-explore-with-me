@@ -43,7 +43,7 @@ public class UserAdminServiceImpl implements UserAdminService {
         try {
             User user = userRepository.save(UserMapper.INSTANCE.toUserFromNewDto(newUserRequest));
             return UserMapper.INSTANCE.toUserDto(user);
-        } catch (DataIntegrityViolationException e) {
+        } catch (Exception e) {
             throw new SaveException("Пользователь не был создан: " + newUserRequest);
         }
     }

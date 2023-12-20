@@ -44,7 +44,7 @@ public class StatsClient {
         try {
             final HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
             return gson.fromJson(response.body(), EndpointHit.class);
-        } catch (NullPointerException | IOException | InterruptedException e) {
+        } catch (Exception e) {
             throw new ClientException("Ошибка в клиенте статистики при выполнении запроса: " + request);
         }
     }
