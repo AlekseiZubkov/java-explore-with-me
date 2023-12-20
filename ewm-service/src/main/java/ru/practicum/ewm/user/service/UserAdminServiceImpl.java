@@ -1,13 +1,11 @@
 package ru.practicum.ewm.user.service;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import ru.practicum.ewm.exception.NotFoundException;
 import ru.practicum.ewm.exception.SaveException;
 import ru.practicum.ewm.user.dto.NewUserRequest;
 import ru.practicum.ewm.user.dto.UserDto;
@@ -24,6 +22,7 @@ public class UserAdminServiceImpl implements UserAdminService {
 
     private final UserRepository userRepository;
 
+    private final UserCategoryService userCategoryService;
 
     @Transactional(readOnly = true)
     @Override
@@ -42,7 +41,7 @@ public class UserAdminServiceImpl implements UserAdminService {
     public UserDto saveUser(NewUserRequest newUserRequest) {
         User user = UserMapper.INSTANCE.toUserFromNewDto(newUserRequest);
         try {
-            user =  userRepository.save(user);
+            user = userRepository.save(user);
 
         } catch (Exception e) {
             throw new SaveException("Пользователь не был создан: " + newUserRequest);
@@ -52,12 +51,8 @@ public class UserAdminServiceImpl implements UserAdminService {
 
     @Override
     public void deleteUserById(Long userId) {
-        returnUser(userId);
+        userCategoryService.returnUser(userId);
         userRepository.deleteById(userId);
     }
 
-    private void returnUser(Long userId) {
-        userRepository.findById(userId)
-                .orElseThrow(() -> new NotFoundException("Пользователь с id = " + userId + " не найден."));
-    }
 }

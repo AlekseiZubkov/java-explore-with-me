@@ -1,7 +1,6 @@
 package ru.practicum.ewm.category.service;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.ewm.category.dto.CategoryDto;
@@ -23,7 +22,7 @@ public class CategoryAdminServiceImpl implements CategoryAdminService {
     public CategoryDto saveCategory(NewCategoryDto newCategoryDto) {
         Category category = CategoryMapper.INSTANCE.toCategoryFromNewDto(newCategoryDto);
         try {
-             category = categoryRepository.save(category);
+            category = categoryRepository.save(category);
 
         } catch (RuntimeException e) {
             throw new SaveException("Категория не была создана: " + newCategoryDto);
@@ -54,7 +53,7 @@ public class CategoryAdminServiceImpl implements CategoryAdminService {
 
         try {
             category = categoryRepository.save(category);
-        } catch (DataIntegrityViolationException  e) {
+        } catch (RuntimeException e) {
             throw new ConflictException("Категория с id = " + catId + " не была обновлена: " + categoryDto);
         }
         return CategoryMapper.INSTANCE.toCategoryDto(category);

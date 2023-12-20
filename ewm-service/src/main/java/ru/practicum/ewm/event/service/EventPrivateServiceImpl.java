@@ -1,7 +1,6 @@
 package ru.practicum.ewm.event.service;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -9,7 +8,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.ewm.StatsClient;
 import ru.practicum.ewm.category.model.Category;
-import ru.practicum.ewm.category.repository.CategoryRepository;
 import ru.practicum.ewm.dto.ViewStats;
 import ru.practicum.ewm.event.dto.*;
 import ru.practicum.ewm.event.mapper.EventMapper;
@@ -28,13 +26,11 @@ import ru.practicum.ewm.request.model.ParticipationRequest;
 import ru.practicum.ewm.request.model.StateRequest;
 import ru.practicum.ewm.request.repository.RequestRepository;
 import ru.practicum.ewm.user.model.User;
-import ru.practicum.ewm.user.repository.UserRepository;
+import ru.practicum.ewm.user.service.UserCategoryService;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-
-import static constant.Constants.FORMATTER_FOR_DATETIME;
 
 @Service
 @Transactional
@@ -43,16 +39,15 @@ public class EventPrivateServiceImpl implements EventPrivateService {
 
     private final EventRepository eventRepository;
     private final RequestRepository requestRepository;
-    private final CategoryRepository categoryRepository;
-    private final UserRepository userRepository;
-    private final CategoryService categoryService;
+    private final EventCategoryService categoryService;
+    private final UserCategoryService userCategoryService;
 
     private final StatsClient statistic;
 
     @Transactional(readOnly = true)
     @Override
     public List<EventShortDto> getAllEventsByUser(Long userId, Integer from, Integer size) {
-        returnUser(userId);
+        userCategoryService.returnUser(userId);
         Pageable page = PageRequest.of(from, size, Sort.by(Sort.Direction.ASC, "id"));
         return EventMapper.INSTANCE.convertEventListToEventShortDtoList(
                 eventRepository.findByInitiatorId(userId, page));
@@ -60,7 +55,7 @@ public class EventPrivateServiceImpl implements EventPrivateService {
 
     @Override
     public EventFullDto saveEvent(Long userId, NewEventDto newEventDto) {
-        User user = returnUser(userId);
+        User user = userCategoryService.returnUser(userId);
         Category category = categoryService.returnCategory(newEventDto.getCategory());
         if (!newEventDto.getEventDate().isAfter(LocalDateTime.now())) {
             throw new ConflictException("Field: eventDate. Error: должно содержать дату, которая еще не наступила. " +
@@ -78,26 +73,25 @@ public class EventPrivateServiceImpl implements EventPrivateService {
 
         try {
             event = eventRepository.save(event);
-            EventFullDto eventFullDto = EventMapper.INSTANCE.toEventFullDto(event);
-            eventFullDto.setViews(0L);
-            return eventFullDto;
-        } catch (DataIntegrityViolationException e) {
+
+        } catch (RuntimeException e) {
             throw new SaveException("Событие не было создано: " + newEventDto);
         }
+        EventFullDto eventFullDto = EventMapper.INSTANCE.toEventFullDto(event);
+        eventFullDto.setViews(0L);
+        return eventFullDto;
     }
 
     @Transactional(readOnly = true)
     @Override
     public EventFullDto getEventById(Long userId, Long eventId) {
-        returnUser(userId);
+        userCategoryService.returnUser(userId);
         Event event = getEvent(eventId);
         checkEventInitiator(event, userId);
 
         List<String> uris = List.of("/events/" + eventId);
 
-        List<ViewStats> viewStats = statistic.getAllStats(
-                LocalDateTime.now().minusYears(100).format(FORMATTER_FOR_DATETIME),
-                LocalDateTime.now().plusYears(100).format(FORMATTER_FOR_DATETIME), uris, true);
+        List<ViewStats> viewStats = statistic.getFullStats();
 
         EventFullDto eventFullDto = EventMapper.INSTANCE.toEventFullDto(event);
         eventFullDto.setConfirmedRequests(requestRepository
@@ -109,7 +103,7 @@ public class EventPrivateServiceImpl implements EventPrivateService {
 
     @Override
     public EventFullDto updateEvent(Long userId, Long eventId, UpdateEventUserRequest updateEventUserRequest) {
-        returnUser(userId);
+        userCategoryService.returnUser(userId);
         Event event = getEvent(eventId);
         checkEventInitiator(event, userId);
 
@@ -168,18 +162,19 @@ public class EventPrivateServiceImpl implements EventPrivateService {
         }
 
         try {
-            return EventMapper.INSTANCE.toEventFullDto(eventRepository.saveAndFlush(event));
-        } catch (DataIntegrityViolationException e) {
+            event = eventRepository.save(event);
+        } catch (RuntimeException e) {
             throw new SaveException("Событие с id = " + eventId + ", userId = " + userId + ", " +
                     "не было обновлено: " + updateEventUserRequest);
         }
+        return EventMapper.INSTANCE.toEventFullDto(event);
     }
 
 
     @Transactional(readOnly = true)
     @Override
     public List<ParticipationRequestDto> getAllRequestsOfEventByUser(Long userId, Long eventId) {
-        returnUser(userId);
+        userCategoryService.returnUser(userId);
         Event event = getEvent(eventId);
         checkEventInitiator(event, userId);
 
@@ -190,7 +185,7 @@ public class EventPrivateServiceImpl implements EventPrivateService {
     @Override
     public EventRequestStatusUpdateResult updateAllRequestsOfEventByUser(
             Long userId, Long eventId, EventRequestStatusUpdateRequest eventRequestStatusUpdateRequest) {
-        returnUser(userId);
+        userCategoryService.returnUser(userId);
         Event event = getEvent(eventId);
         checkEventInitiator(event, userId);
 
@@ -257,13 +252,6 @@ public class EventPrivateServiceImpl implements EventPrivateService {
                     " не является инициатором события с id = " + event.getId());
         }
     }
-
-
-    private User returnUser(Long userId) {
-        return userRepository.findById(userId)
-                .orElseThrow(() -> new NotFoundException("Пользователь с id = " + userId + " не найден."));
-    }
-
 
 
     private Event getEvent(Long eventId) {

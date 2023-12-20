@@ -41,10 +41,8 @@ public class EventAdminServiceImpl implements EventAdminService {
 
     private final EventRepository eventRepository;
     private final RequestRepository requestRepository;
-    private final CategoryRepository categoryRepository;
-    private final LocationRepository locationRepository;
     private final StatsClient statistic;
-    private final CategoryService categoryService;
+    private final EventCategoryService categoryService;
 
     @Transactional(readOnly = true)
     @Override
@@ -137,7 +135,7 @@ public class EventAdminServiceImpl implements EventAdminService {
         }
 
         try {
-            event =eventRepository.saveAndFlush(event);
+            event = eventRepository.save(event);
         } catch (Exception e) {
             throw new SaveException("Событие с id = " + eventId + ", не было обновлено: " +
                     updateEventAdminRequest);

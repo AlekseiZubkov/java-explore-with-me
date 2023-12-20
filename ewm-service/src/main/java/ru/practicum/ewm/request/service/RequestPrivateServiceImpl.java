@@ -14,7 +14,7 @@ import ru.practicum.ewm.request.model.ParticipationRequest;
 import ru.practicum.ewm.request.model.StateRequest;
 import ru.practicum.ewm.request.repository.RequestRepository;
 import ru.practicum.ewm.user.model.User;
-import ru.practicum.ewm.user.repository.UserRepository;
+import ru.practicum.ewm.user.service.UserCategoryService;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -26,19 +26,19 @@ public class RequestPrivateServiceImpl implements RequestPrivateService {
 
     private final RequestRepository requestRepository;
     private final EventRepository eventRepository;
-    private final UserRepository userRepository;
+    private final UserCategoryService userCategoryService;
 
     @Transactional(readOnly = true)
     @Override
     public List<ParticipationRequestDto> getAllRequestsByUser(Long userId) {
-        returnUser(userId);
+        userCategoryService.returnUser(userId);
         return ParticipationRequestMapper.INSTANCE.convertParticipationRequestToDtoList(
                 requestRepository.findAllByRequesterId(userId));
     }
 
     @Override
     public ParticipationRequestDto saveRequest(Long userId, Long eventId) {
-        User requester = returnUser(userId);
+        User requester = userCategoryService.returnUser(userId);
         Event event = eventRepository.findById(eventId).orElseThrow(() ->
                 new NotFoundException("Событие с ID " + eventId + " не найдено."));
 
@@ -81,7 +81,7 @@ public class RequestPrivateServiceImpl implements RequestPrivateService {
 
     @Override
     public ParticipationRequestDto updateRequest(Long userId, Long requestId) {
-        returnUser(userId);
+        userCategoryService.returnUser(userId);
         ParticipationRequest participationRequest = requestRepository.findById(requestId).orElseThrow(() ->
                 new NotFoundException("Запрос на участие с ID " + requestId + " не найден."));
 
@@ -95,9 +95,5 @@ public class RequestPrivateServiceImpl implements RequestPrivateService {
                 requestRepository.saveAndFlush(participationRequest));
     }
 
-    private User returnUser(Long userId) {
-        return userRepository.findById(userId)
-                .orElseThrow(() -> new NotFoundException("Пользователь с id = " + userId + " не найден."));
-    }
 
 }

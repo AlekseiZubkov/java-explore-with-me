@@ -1,7 +1,6 @@
 package ru.practicum.ewm.service;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import ru.practicum.ewm.dto.EndpointHit;
 import ru.practicum.ewm.dto.ViewStats;
@@ -23,12 +22,14 @@ public class StatsServerServiceImpl implements StatsServerService {
 
     @Override
     public EndpointHit saveEndpointHit(EndpointHit endpointHit) {
+        Hit hit = StatsServerMapper.INSTANCE.toHit(endpointHit);
         try {
-            Hit hit = statsServerRepository.save(StatsServerMapper.INSTANCE.toHit(endpointHit));
-            return StatsServerMapper.INSTANCE.toEndpointHit(hit);
-        } catch (DataIntegrityViolationException e) {
+            hit = statsServerRepository.save(StatsServerMapper.INSTANCE.toHit(endpointHit));
+
+        } catch (RuntimeException e) {
             throw new HitNotSaveException("Информация не сохранена: " + endpointHit);
         }
+        return StatsServerMapper.INSTANCE.toEndpointHit(hit);
     }
 
 
@@ -54,7 +55,7 @@ public class StatsServerServiceImpl implements StatsServerService {
 
     @Override
     public List<ViewStats> getFullStats() {
-            return statsServerRepository.getAllStatsWithautTime();
+        return statsServerRepository.getAllStatsWithautTime();
     }
 
 }

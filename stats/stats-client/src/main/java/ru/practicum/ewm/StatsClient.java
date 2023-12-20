@@ -10,7 +10,6 @@ import ru.practicum.ewm.dto.EndpointHit;
 import ru.practicum.ewm.dto.ViewStats;
 import ru.practicum.ewm.exception.ClientException;
 
-import java.io.IOException;
 import java.lang.reflect.Type;
 import java.net.URI;
 import java.net.http.HttpClient;
@@ -32,6 +31,7 @@ public class StatsClient {
     public StatsClient(@Value("${stats-server.url}") String serverUrl) {
         this.serverUrl = serverUrl;
     }
+
     public EndpointHit saveHit(EndpointHit endpointHitDto) {
         URI uri = URI.create(serverUrl + "/hit");
         final HttpRequest.BodyPublisher body = HttpRequest.BodyPublishers.ofString(gson.toJson(endpointHitDto));
@@ -70,7 +70,7 @@ public class StatsClient {
             Type userType = new TypeToken<List<ViewStats>>() {
             }.getType();
             return gson.fromJson(response.body(), userType);
-        } catch (NullPointerException | IOException | InterruptedException e) {
+        } catch (Exception e) {
             throw new ClientException("Ошибка в клиенте статистики при выполнении запроса: " + request);
         }
     }
@@ -89,12 +89,14 @@ public class StatsClient {
 
         try {
             final HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
-            Type userType = new TypeToken<List<ViewStats>>() {}.getType();
+            Type userType = new TypeToken<List<ViewStats>>() {
+            }.getType();
             return gson.fromJson(response.body(), userType);
-        } catch (NullPointerException | IOException | InterruptedException e) {
+        } catch (Exception e) {
             throw new ClientException("Ошибка в клиенте статистики при выполнении запроса: " + request);
         }
     }
+
     private static Gson getGson() {
         GsonBuilder gsonBuilder = new GsonBuilder();
         gsonBuilder.registerTypeAdapter(LocalDateTime.class, new LocalDateTimeAdapter());

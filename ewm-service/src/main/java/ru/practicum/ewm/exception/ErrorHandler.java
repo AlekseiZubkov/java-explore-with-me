@@ -49,7 +49,7 @@ public class ErrorHandler {
     public ApiError handleNotSave(final SaveException e) {
         ApiError apiError = new ApiError();
         apiError.setStatus(HttpStatus.CONFLICT);
-        apiError.setReason("Integrity constraint has been violated.");
+        apiError.setReason("Ошибка сохранения");
         apiError.setMessage(e.getMessage());
         apiError.setTimestamp(LocalDateTime.now());
         apiError.setErrors(Arrays.stream(e.getStackTrace()).map(x -> x.toString()).collect(Collectors.toList()));
@@ -63,7 +63,7 @@ public class ErrorHandler {
     public ApiError handleNotSave(final NotFoundException e) {
         ApiError apiError = new ApiError();
         apiError.setStatus(HttpStatus.NOT_FOUND);
-        apiError.setReason("The required object was not found.");
+        apiError.setReason("Требуемый объект не был найден.");
         apiError.setMessage(e.getMessage());
         apiError.setTimestamp(LocalDateTime.now());
         apiError.setErrors(Arrays.stream(e.getStackTrace()).map(x -> x.toString()).collect(Collectors.toList()));
@@ -77,7 +77,7 @@ public class ErrorHandler {
     public ApiError handleNotSave(final ConflictException e) {
         ApiError apiError = new ApiError();
         apiError.setStatus(HttpStatus.CONFLICT);
-        apiError.setReason("For the requested operation the conditions are not met.");
+        apiError.setReason("Для запрошенной операции условия не выполнены.");
         apiError.setMessage(e.getMessage());
         apiError.setTimestamp(LocalDateTime.now());
         apiError.setErrors(Arrays.stream(e.getStackTrace()).map(x -> x.toString()).collect(Collectors.toList()));
@@ -91,7 +91,7 @@ public class ErrorHandler {
     public ApiError handleNotSave(final RuntimeException e) {
         ApiError apiError = new ApiError();
         apiError.setStatus(HttpStatus.BAD_REQUEST);
-        apiError.setReason("Incorrectly made request.");
+        apiError.setReason("Неправильно сделан запрос..");
         apiError.setMessage(e.getMessage());
         apiError.setTimestamp(LocalDateTime.now());
         apiError.setErrors(Arrays.stream(e.getStackTrace()).map(x -> x.toString()).collect(Collectors.toList()));

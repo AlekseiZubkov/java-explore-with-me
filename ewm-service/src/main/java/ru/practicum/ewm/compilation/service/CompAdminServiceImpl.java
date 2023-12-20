@@ -1,7 +1,6 @@
 package ru.practicum.ewm.compilation.service;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.ewm.compilation.dto.CompilationDto;
@@ -46,7 +45,7 @@ public class CompAdminServiceImpl implements CompAdminService {
         returnCompilation(compId);
         try {
             compilationRepository.deleteById(compId);
-        } catch (DataIntegrityViolationException e) {
+        } catch (RuntimeException e) {
             throw new ConflictException("Подборка с id = " + compId + " не может быть удалена.");
         }
     }
