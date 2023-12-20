@@ -16,22 +16,18 @@ import java.util.List;
 @Service
 @RequiredArgsConstructor
 public class StatsServerServiceImpl implements StatsServerService {
-
     private final StatsServerRepository statsServerRepository;
-
 
     @Override
     public EndpointHit saveEndpointHit(EndpointHit endpointHit) {
         Hit hit = StatsServerMapper.INSTANCE.toHit(endpointHit);
         try {
             hit = statsServerRepository.save(hit);
-
         } catch (RuntimeException e) {
             throw new HitNotSaveException("Информация не сохранена: " + endpointHit);
         }
         return StatsServerMapper.INSTANCE.toEndpointHit(hit);
     }
-
 
     @Override
     public List<ViewStats> getAllStats(LocalDateTime start, LocalDateTime end, List<String> uris, Boolean unique) {
