@@ -52,4 +52,9 @@ public class StatsServerServiceImpl implements StatsServerService {
         }
     }
 
+    @Override
+    public List<ViewStats> getFullStats() {
+            return statsServerRepository.getAllStatsWithautTime();
+    }
+
 }

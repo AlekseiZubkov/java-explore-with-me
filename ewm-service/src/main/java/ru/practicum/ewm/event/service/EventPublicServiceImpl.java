@@ -83,9 +83,11 @@ public class EventPublicServiceImpl implements EventPublicService {
         List<EventShortDto> eventShortDtos = EventMapper.INSTANCE.convertEventListToEventShortDtoList(events);
 
         eventShortDtos.stream()
-                .peek(dto -> dto.setConfirmedRequests(
-                        requestRepository.countByEventIdAndStatus(dto.getId(), StateRequest.CONFIRMED)))
-                .peek(dto -> dto.setViews(views.getOrDefault(dto.getId(), 0L)))
+                .peek(dto -> {
+                    dto.setConfirmedRequests(
+                            requestRepository.countByEventIdAndStatus(dto.getId(), StateRequest.CONFIRMED));
+                    dto.setViews(views.getOrDefault(dto.getId(), 0L));
+                })
                 .collect(Collectors.toList());
 
         if (sort.equals(SortSearch.VIEWS)) {
@@ -110,9 +112,7 @@ public class EventPublicServiceImpl implements EventPublicService {
         statistic.saveHit(endpointHit);
 
         List<String> uris = List.of("/events/" + event.getId());
-        List<ViewStats> viewStats = statistic.getAllStats(
-                LocalDateTime.now().minusYears(100).format(FORMATTER_FOR_DATETIME),
-                LocalDateTime.now().plusYears(100).format(FORMATTER_FOR_DATETIME), uris, true);
+        List<ViewStats> viewStats = statistic.getFullStats();
 
         EventFullDto eventFullDto = EventMapper.INSTANCE.toEventFullDto(event);
         eventFullDto.setConfirmedRequests(requestRepository

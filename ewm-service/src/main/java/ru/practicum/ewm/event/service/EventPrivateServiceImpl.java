@@ -13,13 +13,11 @@ import ru.practicum.ewm.category.repository.CategoryRepository;
 import ru.practicum.ewm.dto.ViewStats;
 import ru.practicum.ewm.event.dto.*;
 import ru.practicum.ewm.event.mapper.EventMapper;
-import ru.practicum.ewm.event.mapper.LocationMapper;
 import ru.practicum.ewm.event.model.Event;
 import ru.practicum.ewm.event.model.Location;
 import ru.practicum.ewm.event.model.StateActionUser;
 import ru.practicum.ewm.event.model.StateEvent;
 import ru.practicum.ewm.event.repository.EventRepository;
-import ru.practicum.ewm.event.repository.LocationRepository;
 import ru.practicum.ewm.exception.BadRequestException;
 import ru.practicum.ewm.exception.ConflictException;
 import ru.practicum.ewm.exception.NotFoundException;
@@ -46,8 +44,8 @@ public class EventPrivateServiceImpl implements EventPrivateService {
     private final EventRepository eventRepository;
     private final RequestRepository requestRepository;
     private final CategoryRepository categoryRepository;
-    private final LocationRepository locationRepository;
     private final UserRepository userRepository;
+    private final CategoryService categoryService;
 
     private final StatsClient statistic;
 
@@ -63,12 +61,12 @@ public class EventPrivateServiceImpl implements EventPrivateService {
     @Override
     public EventFullDto saveEvent(Long userId, NewEventDto newEventDto) {
         User user = returnUser(userId);
-        Category category = returnCategory(newEventDto.getCategory());
+        Category category = categoryService.returnCategory(newEventDto.getCategory());
         if (!newEventDto.getEventDate().isAfter(LocalDateTime.now())) {
             throw new ConflictException("Field: eventDate. Error: должно содержать дату, которая еще не наступила. " +
                     "Value: " + newEventDto.getEventDate());
         }
-        Location location = returnLocation(newEventDto.getLocation());
+        Location location = categoryService.returnOrSaveLocation(newEventDto.getLocation());
 
         Event event = EventMapper.INSTANCE.toEventFromNewDto(newEventDto, user, category, location);
         event.setConfirmedRequests(0L);
@@ -96,6 +94,7 @@ public class EventPrivateServiceImpl implements EventPrivateService {
         checkEventInitiator(event, userId);
 
         List<String> uris = List.of("/events/" + eventId);
+
         List<ViewStats> viewStats = statistic.getAllStats(
                 LocalDateTime.now().minusYears(100).format(FORMATTER_FOR_DATETIME),
                 LocalDateTime.now().plusYears(100).format(FORMATTER_FOR_DATETIME), uris, true);
@@ -122,7 +121,7 @@ public class EventPrivateServiceImpl implements EventPrivateService {
             event.setAnnotation(updateEventUserRequest.getAnnotation());
         }
         if (updateEventUserRequest.getCategory() != null) {
-            Category category = returnCategory(updateEventUserRequest.getCategory());
+            Category category = categoryService.returnCategory(updateEventUserRequest.getCategory());
             event.setCategory(category);
 
 
@@ -139,7 +138,7 @@ public class EventPrivateServiceImpl implements EventPrivateService {
             event.setEventDate(updateEventUserRequest.getEventDate());
         }
         if (updateEventUserRequest.getLocation() != null) {
-            Location location = returnLocation(updateEventUserRequest.getLocation());
+            Location location = categoryService.returnOrSaveLocation(updateEventUserRequest.getLocation());
             event.setLocation(location);
         }
         if (updateEventUserRequest.getPaid() != null) {
@@ -259,22 +258,15 @@ public class EventPrivateServiceImpl implements EventPrivateService {
         }
     }
 
-    private Category returnCategory(Long catId) {
-        return categoryRepository.findById(catId)
-                .orElseThrow(() -> new NotFoundException("Категория с id = " + catId + " не найден."));
-    }
 
     private User returnUser(Long userId) {
         return userRepository.findById(userId)
                 .orElseThrow(() -> new NotFoundException("Пользователь с id = " + userId + " не найден."));
     }
 
-    private Location returnLocation(LocationDto locationDto) {
-        Location location = locationRepository.findByLatAndLon(locationDto.getLat(), locationDto.getLon());
-        return location != null ? location : locationRepository.save(LocationMapper.INSTANCE.toLocation(locationDto));
-    }
 
-    public Event getEvent(Long eventId) {
+
+    private Event getEvent(Long eventId) {
         return eventRepository.findById(eventId).orElseThrow(() ->
                 new NotFoundException("Событие с ID " + eventId + " не найдено."));
     }

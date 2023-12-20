@@ -40,12 +40,14 @@ public class UserAdminServiceImpl implements UserAdminService {
 
     @Override
     public UserDto saveUser(NewUserRequest newUserRequest) {
+        User user = UserMapper.INSTANCE.toUserFromNewDto(newUserRequest);
         try {
-            User user = userRepository.save(UserMapper.INSTANCE.toUserFromNewDto(newUserRequest));
-            return UserMapper.INSTANCE.toUserDto(user);
+            user =  userRepository.save(user);
+
         } catch (Exception e) {
             throw new SaveException("Пользователь не был создан: " + newUserRequest);
         }
+        return UserMapper.INSTANCE.toUserDto(user);
     }
 
     @Override

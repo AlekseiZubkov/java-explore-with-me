@@ -1,7 +1,6 @@
 package ru.practicum.ewm.event.service;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -12,10 +11,8 @@ import ru.practicum.ewm.category.model.Category;
 import ru.practicum.ewm.category.repository.CategoryRepository;
 import ru.practicum.ewm.dto.ViewStats;
 import ru.practicum.ewm.event.dto.EventFullDto;
-import ru.practicum.ewm.event.dto.LocationDto;
 import ru.practicum.ewm.event.dto.UpdateEventAdminRequest;
 import ru.practicum.ewm.event.mapper.EventMapper;
-import ru.practicum.ewm.event.mapper.LocationMapper;
 import ru.practicum.ewm.event.model.Event;
 import ru.practicum.ewm.event.model.Location;
 import ru.practicum.ewm.event.model.StateActionAdmin;
@@ -47,6 +44,7 @@ public class EventAdminServiceImpl implements EventAdminService {
     private final CategoryRepository categoryRepository;
     private final LocationRepository locationRepository;
     private final StatsClient statistic;
+    private final CategoryService categoryService;
 
     @Transactional(readOnly = true)
     @Override
@@ -85,7 +83,7 @@ public class EventAdminServiceImpl implements EventAdminService {
             event.setAnnotation(updateEventAdminRequest.getAnnotation());
         }
         if (updateEventAdminRequest.getCategory() != null) {
-            Category category = returnCategory(updateEventAdminRequest.getCategory());
+            Category category = categoryService.returnCategory(updateEventAdminRequest.getCategory());
             event.setCategory(category);
         }
         if (updateEventAdminRequest.getDescription() != null) {
@@ -98,7 +96,7 @@ public class EventAdminServiceImpl implements EventAdminService {
                     eventId, updateEventAdminRequest));
         }
         if (updateEventAdminRequest.getLocation() != null) {
-            Location location = returnLocation(updateEventAdminRequest.getLocation());
+            Location location = categoryService.returnOrSaveLocation(updateEventAdminRequest.getLocation());
             event.setLocation(location);
         }
         if (updateEventAdminRequest.getPaid() != null) {
@@ -139,16 +137,12 @@ public class EventAdminServiceImpl implements EventAdminService {
         }
 
         try {
-            return EventMapper.INSTANCE.toEventFullDto(eventRepository.saveAndFlush(event));
-        } catch (DataIntegrityViolationException e) {
+            event =eventRepository.saveAndFlush(event);
+        } catch (Exception e) {
             throw new SaveException("Событие с id = " + eventId + ", не было обновлено: " +
                     updateEventAdminRequest);
         }
-    }
-
-    private Category returnCategory(Long catId) {
-        return categoryRepository.findById(catId)
-                .orElseThrow(() -> new NotFoundException("Категория с id = " + catId + " не найден."));
+        return EventMapper.INSTANCE.toEventFullDto(event);
     }
 
     private Map<Long, Long> returnMapViewStats(List<Event> events, LocalDateTime rangeStart, LocalDateTime rangeEnd) {
@@ -164,11 +158,6 @@ public class EventAdminServiceImpl implements EventAdminService {
             views.put(id, views.getOrDefault(id, 0L) + 1);
         }
         return views;
-    }
-
-    private Location returnLocation(LocationDto locationDto) {
-        Location location = locationRepository.findByLatAndLon(locationDto.getLat(), locationDto.getLon());
-        return location != null ? location : locationRepository.save(LocationMapper.INSTANCE.toLocation(locationDto));
     }
 
 }

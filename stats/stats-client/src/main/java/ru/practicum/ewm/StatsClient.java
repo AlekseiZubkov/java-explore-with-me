@@ -32,7 +32,6 @@ public class StatsClient {
     public StatsClient(@Value("${stats-server.url}") String serverUrl) {
         this.serverUrl = serverUrl;
     }
-
     public EndpointHit saveHit(EndpointHit endpointHitDto) {
         URI uri = URI.create(serverUrl + "/hit");
         final HttpRequest.BodyPublisher body = HttpRequest.BodyPublishers.ofString(gson.toJson(endpointHitDto));
@@ -76,6 +75,26 @@ public class StatsClient {
         }
     }
 
+    public List<ViewStats> getFullStats() {
+        URI uri = UriComponentsBuilder.fromUriString(serverUrl)
+                .path("/full-stats")
+                .encode()
+                .build()
+                .toUri();
+
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(uri)
+                .GET()
+                .build();
+
+        try {
+            final HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+            Type userType = new TypeToken<List<ViewStats>>() {}.getType();
+            return gson.fromJson(response.body(), userType);
+        } catch (NullPointerException | IOException | InterruptedException e) {
+            throw new ClientException("Ошибка в клиенте статистики при выполнении запроса: " + request);
+        }
+    }
     private static Gson getGson() {
         GsonBuilder gsonBuilder = new GsonBuilder();
         gsonBuilder.registerTypeAdapter(LocalDateTime.class, new LocalDateTimeAdapter());

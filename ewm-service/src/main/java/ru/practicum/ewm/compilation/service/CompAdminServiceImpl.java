@@ -20,14 +20,12 @@ import java.util.HashSet;
 import java.util.Set;
 
 @Service
-@Transactional
 @RequiredArgsConstructor
 public class CompAdminServiceImpl implements CompAdminService {
 
     private final CompilationRepository compilationRepository;
     private final EventRepository eventRepository;
 
-    @Transactional
     @Override
     public CompilationDto saveCompilation(NewCompilationDto newCompilationDto) {
         Set<Event> events = new HashSet<>();
@@ -70,11 +68,12 @@ public class CompAdminServiceImpl implements CompAdminService {
         }
 
         try {
-            return CompilationMapper.INSTANCE.toCompilationDto(compilationRepository.saveAndFlush(compilation));
-        } catch (DataIntegrityViolationException e) {
+            compilation = compilationRepository.save(compilation);
+        } catch (RuntimeException e) {
             throw new SaveException("Подборка событий с id = " + compId +
                     " не была обновлена: " + updateCompilationRequest);
         }
+        return CompilationMapper.INSTANCE.toCompilationDto(compilation);
     }
 
     private Compilation returnCompilation(Long compId) {

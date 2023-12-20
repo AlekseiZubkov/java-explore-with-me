@@ -21,13 +21,14 @@ public class CategoryAdminServiceImpl implements CategoryAdminService {
 
     @Override
     public CategoryDto saveCategory(NewCategoryDto newCategoryDto) {
+        Category category = CategoryMapper.INSTANCE.toCategoryFromNewDto(newCategoryDto);
         try {
-            Category category = categoryRepository.save(
-                    CategoryMapper.INSTANCE.toCategoryFromNewDto(newCategoryDto));
-            return CategoryMapper.INSTANCE.toCategoryDto(category);
+             category = categoryRepository.save(category);
+
         } catch (RuntimeException e) {
             throw new SaveException("Категория не была создана: " + newCategoryDto);
         }
+        return CategoryMapper.INSTANCE.toCategoryDto(category);
     }
 
     @Transactional
