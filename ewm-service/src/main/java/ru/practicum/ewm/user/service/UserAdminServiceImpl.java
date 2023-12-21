@@ -6,7 +6,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import ru.practicum.ewm.exception.SaveException;
 import ru.practicum.ewm.user.dto.NewUserRequest;
 import ru.practicum.ewm.user.dto.UserDto;
 import ru.practicum.ewm.user.mapper.UserMapper;
@@ -40,12 +39,7 @@ public class UserAdminServiceImpl implements UserAdminService {
     @Override
     public UserDto saveUser(NewUserRequest newUserRequest) {
         User user = UserMapper.INSTANCE.toUserFromNewDto(newUserRequest);
-        try {
-            user = userRepository.save(user);
-
-        } catch (Exception e) {
-            throw new SaveException("Пользователь не был создан: " + newUserRequest);
-        }
+        user = userRepository.save(user);
         return UserMapper.INSTANCE.toUserDto(user);
     }
 

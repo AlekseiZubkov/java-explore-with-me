@@ -1,7 +1,9 @@
 package ru.practicum.ewm.exception;
 
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -100,6 +102,20 @@ public class ErrorHandler {
         return apiError;
     }
 
+    @ExceptionHandler({
+            org.hibernate.exception.ConstraintViolationException.class,
+            javax.validation.ConstraintViolationException.class,
+            DataIntegrityViolationException.class})
+    public final ResponseEntity<ApiError> handleConflictException(Exception e) {
+        ApiError apiError = new ApiError();
+        apiError.setStatus(HttpStatus.CONFLICT);
+        apiError.setReason("Нарушение целостности данных");
+        apiError.setMessage(e.getMessage());
+        apiError.setTimestamp(LocalDateTime.now());
+        apiError.setErrors(Arrays.stream(e.getStackTrace()).map(StackTraceElement::toString)
+                .collect(Collectors.toList()));
+        return new ResponseEntity<>(apiError, HttpStatus.CONFLICT);
+    }
 
     @ExceptionHandler
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)

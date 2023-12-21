@@ -11,9 +11,7 @@ import ru.practicum.ewm.compilation.model.Compilation;
 import ru.practicum.ewm.compilation.repository.CompilationRepository;
 import ru.practicum.ewm.event.model.Event;
 import ru.practicum.ewm.event.repository.EventRepository;
-import ru.practicum.ewm.exception.ConflictException;
 import ru.practicum.ewm.exception.NotFoundException;
-import ru.practicum.ewm.exception.SaveException;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -43,11 +41,8 @@ public class CompAdminServiceImpl implements CompAdminService {
     @Override
     public void deleteCompilationById(Long compId) {
         returnCompilation(compId);
-        try {
-            compilationRepository.deleteById(compId);
-        } catch (RuntimeException e) {
-            throw new ConflictException("Подборка с id = " + compId + " не может быть удалена.");
-        }
+        compilationRepository.deleteById(compId);
+
     }
 
     @Transactional
@@ -66,12 +61,7 @@ public class CompAdminServiceImpl implements CompAdminService {
             compilation.setTitle(updateCompilationRequest.getTitle());
         }
 
-        try {
-            compilation = compilationRepository.save(compilation);
-        } catch (RuntimeException e) {
-            throw new SaveException("Подборка событий с id = " + compId +
-                    " не была обновлена: " + updateCompilationRequest);
-        }
+        compilation = compilationRepository.save(compilation);
         return CompilationMapper.INSTANCE.toCompilationDto(compilation);
     }
 

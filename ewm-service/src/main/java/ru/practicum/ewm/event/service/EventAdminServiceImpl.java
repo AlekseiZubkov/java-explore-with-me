@@ -20,7 +20,6 @@ import ru.practicum.ewm.event.repository.EventRepository;
 import ru.practicum.ewm.exception.BadRequestException;
 import ru.practicum.ewm.exception.ConflictException;
 import ru.practicum.ewm.exception.NotFoundException;
-import ru.practicum.ewm.exception.SaveException;
 import ru.practicum.ewm.request.model.StateRequest;
 import ru.practicum.ewm.request.repository.RequestRepository;
 
@@ -131,13 +130,7 @@ public class EventAdminServiceImpl implements EventAdminService {
         if (updateEventAdminRequest.getTitle() != null) {
             event.setTitle(updateEventAdminRequest.getTitle());
         }
-
-        try {
-            event = eventRepository.save(event);
-        } catch (Exception e) {
-            throw new SaveException("Событие с id = " + eventId + ", не было обновлено: " +
-                    updateEventAdminRequest);
-        }
+        event = eventRepository.save(event);
         return EventMapper.INSTANCE.toEventFullDto(event);
     }
 

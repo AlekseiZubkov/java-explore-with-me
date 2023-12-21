@@ -8,9 +8,7 @@ import ru.practicum.ewm.category.dto.NewCategoryDto;
 import ru.practicum.ewm.category.mapper.CategoryMapper;
 import ru.practicum.ewm.category.model.Category;
 import ru.practicum.ewm.category.repository.CategoryRepository;
-import ru.practicum.ewm.exception.ConflictException;
 import ru.practicum.ewm.exception.NotFoundException;
-import ru.practicum.ewm.exception.SaveException;
 
 @Service
 @RequiredArgsConstructor
@@ -21,12 +19,7 @@ public class CategoryAdminServiceImpl implements CategoryAdminService {
     @Override
     public CategoryDto saveCategory(NewCategoryDto newCategoryDto) {
         Category category = CategoryMapper.INSTANCE.toCategoryFromNewDto(newCategoryDto);
-        try {
-            category = categoryRepository.save(category);
-
-        } catch (RuntimeException e) {
-            throw new SaveException("Категория не была создана: " + newCategoryDto);
-        }
+        category = categoryRepository.save(category);
         return CategoryMapper.INSTANCE.toCategoryDto(category);
     }
 
@@ -35,27 +28,17 @@ public class CategoryAdminServiceImpl implements CategoryAdminService {
     public Boolean deleteCategoryById(Long catId) {
         categoryRepository.findById(catId)
                 .orElseThrow(() -> new NotFoundException("Категория с id = " + catId + " не найден."));
-
-        try {
-            return categoryRepository.deleteByIdWithReturnedLines(catId) >= 0;
-        } catch (RuntimeException e) {
-            throw new ConflictException("Категория с id = " + catId + " не может быть удалена, " +
-                    "существуют события, связанные с категорией.");
-        }
+        return categoryRepository.deleteByIdWithReturnedLines(catId) >= 0;
     }
 
-
+    @Transactional
     @Override
     public CategoryDto updateCategory(Long catId, CategoryDto categoryDto) {
         Category category = categoryRepository.findById(catId)
                 .orElseThrow(() -> new NotFoundException("Категория с id = " + catId + " не найден."));
         category.setName(categoryDto.getName());
 
-        try {
-            category = categoryRepository.save(category);
-        } catch (RuntimeException e) {
-            throw new ConflictException("Категория с id = " + catId + " не была обновлена: " + categoryDto);
-        }
+        category = categoryRepository.save(category);
         return CategoryMapper.INSTANCE.toCategoryDto(category);
     }
 

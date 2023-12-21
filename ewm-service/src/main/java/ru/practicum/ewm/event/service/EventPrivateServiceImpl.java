@@ -70,13 +70,7 @@ public class EventPrivateServiceImpl implements EventPrivateService {
         event.setLocation(location);
         event.setPublishedOn(LocalDateTime.now());
         event.setState(StateEvent.PENDING);
-
-        try {
-            event = eventRepository.save(event);
-
-        } catch (RuntimeException e) {
-            throw new SaveException("Событие не было создано: " + newEventDto);
-        }
+        event = eventRepository.save(event);
         EventFullDto eventFullDto = EventMapper.INSTANCE.toEventFullDto(event);
         eventFullDto.setViews(0L);
         return eventFullDto;
