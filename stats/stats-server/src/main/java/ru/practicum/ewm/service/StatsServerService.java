@@ -12,4 +12,5 @@ public interface StatsServerService {
 
     List<ViewStats> getAllStats(LocalDateTime start, LocalDateTime end, List<String> uris, Boolean unique);
 
+    List<ViewStats> getFullStats();
 }

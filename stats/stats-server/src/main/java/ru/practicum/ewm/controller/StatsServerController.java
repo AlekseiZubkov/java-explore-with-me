@@ -40,4 +40,11 @@ public class StatsServerController {
         return ResponseEntity.ok().body(stats);
     }
 
+    @GetMapping("/full-stats")
+    public ResponseEntity<List<ViewStats>> getFullStats() {
+        List<ViewStats> stats = statsServerService.getFullStats();
+        log.info("Получить полную статистику ");
+        return ResponseEntity.ok().body(stats);
+    }
+
 }

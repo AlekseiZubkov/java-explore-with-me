@@ -42,4 +42,10 @@ public interface StatsServerRepository extends JpaRepository<Hit, Long> {
             "order by count_ip desc ")
     List<ViewStats> getAllUniqueStats(LocalDateTime start, LocalDateTime end);
 
+    @Query("select new ru.practicum.ewm.dto.ViewStats(h.app, h.uri, COUNT(DISTINCT h.ip) as count_ip) " +
+            "from Hit as h " +
+            "group by h.app, h.uri " +
+            "order by count_ip desc ")
+    List<ViewStats> getAllStatsWithautTime();
+
 }
