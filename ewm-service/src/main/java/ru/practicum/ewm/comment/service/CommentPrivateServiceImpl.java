@@ -57,10 +57,8 @@ public class CommentPrivateServiceImpl implements CommentPrivateService {
     @Override
     public void deleteCommentByUser(Long userId, Long eventId, Long commentId) {
         checkEventAvailability(eventId);
-
         Comment comment = commentRepository.findById(commentId).orElseThrow(() -> new NotFoundException("Комментарий не найден"));
         checkAuthorComment(userId, comment);
-
         commentRepository.deleteById(commentId);
 
     }
@@ -71,7 +69,6 @@ public class CommentPrivateServiceImpl implements CommentPrivateService {
         PageRequest pageRequest = PageRequest.of(from / size, size);
         List<Comment> comments = commentRepository.findByEventId(eventId, pageRequest);
         return CommentMapper.toCommentDtoList(comments);
-
     }
 
     @Override
