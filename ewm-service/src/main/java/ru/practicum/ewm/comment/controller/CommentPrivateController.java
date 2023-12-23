@@ -8,8 +8,6 @@ import org.springframework.web.bind.annotation.*;
 import ru.practicum.ewm.comment.dto.CommentDto;
 import ru.practicum.ewm.comment.service.CommentPrivateService;
 
-import java.util.List;
-
 @RestController
 @RequiredArgsConstructor
 @Validated

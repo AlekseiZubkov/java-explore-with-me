@@ -7,5 +7,6 @@ import java.util.List;
 
 public interface CommentAdminService {
     void deleteCommentByAdmin(Long commentId);
+
     List<CommentDto> findAllByAdmin(LocalDateTime rangeStart, LocalDateTime rangeEnd, Integer from, Integer size);
 }

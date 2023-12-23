@@ -10,7 +10,9 @@ public interface CommentPrivateService {
     CommentDto updateComment(Long userId, Long commentId, Long eventId, CommentDto commentDto);
 
     void deleteCommentByUser(Long userId, Long eventId, Long commentId);
+
     List<CommentDto> findAllByEventId(Long eventId, Integer from, Integer size);
+
     CommentDto findCommentById(Long userId, Long eventId, Long commentId);
 
 }
