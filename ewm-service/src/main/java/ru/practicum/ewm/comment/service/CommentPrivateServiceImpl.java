@@ -79,13 +79,13 @@ public class CommentPrivateServiceImpl implements CommentPrivateService {
                 .orElseThrow(() -> new NotFoundException("Комментарий не найден"));
         return CommentMapper.toCommentDto(comment);
     }
-    @Transactional(readOnly = true)
+
     private void checkEventAvailability(Long eventId) {
         if (!eventRepository.existsById(eventId)) {
             throw new NotFoundException("Событие не найдено");
         }
     }
-    @Transactional(readOnly = true)
+
     private static void checkAuthorComment(Long userId, Comment comment) {
         if (!Objects.equals(userId, comment.getAuthor().getId())) {
             throw new ConflictException("Изменение может вносить только автор комментария.");
