@@ -28,7 +28,6 @@ public class CategoryAdminController {
     }
 
     @DeleteMapping("/{catId}")
-    @ResponseStatus(HttpStatus.NO_CONTENT)
     public ResponseEntity<Boolean> deleteCategoryById(@PathVariable Long catId) {
         Boolean result = adminService.deleteCategoryById(catId);
         log.info("Удалена категория с id = {}", catId);

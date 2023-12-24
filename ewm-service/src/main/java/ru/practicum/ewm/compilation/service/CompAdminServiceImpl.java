@@ -30,7 +30,6 @@ public class CompAdminServiceImpl implements CompAdminService {
         if (newCompilationDto.getEvents() != null && !newCompilationDto.getEvents().isEmpty()) {
             events.addAll(eventRepository.findAllById(newCompilationDto.getEvents()));
         }
-
         Compilation compilation = compilationRepository.save(
                 CompilationMapper.INSTANCE.toCompilationFromNewDto(newCompilationDto, events));
 
