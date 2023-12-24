@@ -19,7 +19,6 @@ import java.util.List;
 import java.util.Objects;
 
 @Service
-@Transactional
 @RequiredArgsConstructor
 public class CommentPrivateServiceImpl implements CommentPrivateService {
     private final CommentRepository commentRepository;
@@ -63,7 +62,7 @@ public class CommentPrivateServiceImpl implements CommentPrivateService {
 
     }
 
-
+    @Transactional(readOnly = true)
     @Override
     public List<CommentDto> findAllByEventId(Long eventId, Integer from, Integer size) {
         PageRequest pageRequest = PageRequest.of(from / size, size);
@@ -71,6 +70,7 @@ public class CommentPrivateServiceImpl implements CommentPrivateService {
         return CommentMapper.toCommentDtoList(comments);
     }
 
+    @Transactional(readOnly = true)
     @Override
     public CommentDto findCommentById(Long userId, Long eventId, Long commentId) {
         checkEventAvailability(eventId);
@@ -79,13 +79,13 @@ public class CommentPrivateServiceImpl implements CommentPrivateService {
                 .orElseThrow(() -> new NotFoundException("Комментарий не найден"));
         return CommentMapper.toCommentDto(comment);
     }
-
+    @Transactional(readOnly = true)
     private void checkEventAvailability(Long eventId) {
         if (!eventRepository.existsById(eventId)) {
             throw new NotFoundException("Событие не найдено");
         }
     }
-
+    @Transactional(readOnly = true)
     private static void checkAuthorComment(Long userId, Comment comment) {
         if (!Objects.equals(userId, comment.getAuthor().getId())) {
             throw new ConflictException("Изменение может вносить только автор комментария.");

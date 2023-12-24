@@ -15,11 +15,9 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
-@Transactional
 @RequiredArgsConstructor
 public class CommentAdminServiceImpl implements CommentAdminService {
     private final CommentRepository commentRepository;
-
     @Transactional
     @Override
     public void deleteCommentByAdmin(Long commentId) {
@@ -28,7 +26,7 @@ public class CommentAdminServiceImpl implements CommentAdminService {
         }
         commentRepository.deleteById(commentId);
     }
-
+    @Transactional(readOnly = true)
     @Override
     public List<CommentDto> findAllByAdmin(LocalDateTime rangeStart,
                                            LocalDateTime rangeEnd, Integer from, Integer size) {

@@ -18,19 +18,19 @@ public class Comment {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
-    Long id;
+    private Long id;
 
     @Column(nullable = false)
-    String text;
+    private String text;
 
     @ManyToOne
     @JoinColumn(name = "event_id", nullable = false)
-    Event event;
+    private Event event;
     @ManyToOne
     @JoinColumn(name = "author_id", nullable = false)
-    User author;
+    private User author;
     @Column
-    LocalDateTime created;
-    @Column(columnDefinition = "BOOLEAN DEFAULT false")
-    Boolean edited;
+    private LocalDateTime created;
+    @Column
+    private Boolean edited = false;
 }
